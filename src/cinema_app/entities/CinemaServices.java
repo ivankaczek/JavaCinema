@@ -5,48 +5,24 @@
  */
 package cinema_app.entities;
 
+import cinema_app.enums.FirstNameEnum;
+import cinema_app.enums.LastNameEnum;
+import java.util.ArrayList;
+import java.util.Random;
+
 /**
  *
  * @author Ivan
  */
 public class CinemaServices {
+    
+    // This 2 attributes are used to create the array with the seats
     private String columnLetter[] = {"A","B","C","D","E","F"};
     private String rowNumber[] = {"1","2","3","4","5","6","7","8"};
    
     @SuppressWarnings("empty-statement")
-    public CinemaAuditorium create48seatsInExplicitWay(){
-        // The empty constructor (SHOULD/IS SUPOSED TO) provid an empty 8X6 String Array
-        //CinemaAuditorium cinemaSeats = new CinemaAuditorium();
-       // Now I need to create 8 rows of seats, each time with a different letter
-       // We create row #1. Maybe it is better to construct a [8][6] Array and then just use the constructor
-       // to "build" the cinemaSeats
-       
-       // ATTENTION HERE! in Array[amountOfRows][amountOfColumns]
-       String[][] temporary8x6Array = new String[6][8];
-       String[] row1 = createRowOfSeats(columnLetter[0], 8);
-       String[] row2 = createRowOfSeats(columnLetter[1], 8);
-       String[] row3 = createRowOfSeats(columnLetter[2], 8);
-       String[] row4 = createRowOfSeats(columnLetter[3], 8);
-       String[] row5 = createRowOfSeats(columnLetter[4], 8);
-       String[] row6 = createRowOfSeats(columnLetter[5], 8);
-       
-       // ATTENTION: there is a mistake here: the array is 6x8
-       //temporary8x6Array = {row1;row2;row3,row4,row5,row6};
-       temporary8x6Array[0]=row1;
-       temporary8x6Array[1]=row2;
-       temporary8x6Array[2]=row3;
-       temporary8x6Array[3]=row4;
-       temporary8x6Array[4]=row5;
-       temporary8x6Array[5]=row6;
-       
-       CinemaAuditorium the48seats = new CinemaAuditorium();
-       the48seats.setCinemaSeats(temporary8x6Array);
-       return the48seats;
-    }
     
-//    public int findPositionOfCharacter(String[] letterArray){
-//           
-//    }
+    // PART ONE : create and display the arrays with seats
     
     public String[] createCorrectRowOfSeats(int numberOfRow){
         String[] correctRowOfSeats = new String[columnLetter.length];
@@ -75,17 +51,6 @@ public class CinemaServices {
         
     }
     
-    // this works when all the letters are in the same row. It is the opposite to this case
-   public String[] createRowOfSeats(String columnLetter, int amountOfSeats){
-       String[] rowOfSeats = new String[amountOfSeats];
-       for (int i = 0; i < amountOfSeats; i++) {
-           rowOfSeats[i] = columnLetter.concat(String.valueOf(i+1)).concat(" ");
-       }
-       return rowOfSeats;
-   } 
-    
-  
-   
    public void displayTheFull8x6CinemaRoom(CinemaAuditorium room){
        String auxRow2bePrinted = "";
        for (String[] cinemaSeat : room.getCinemaSeats()) {
@@ -102,13 +67,113 @@ public class CinemaServices {
         return row2display;
     }
     
-    public String displayWithForE(String[] rowOfSeats){
-        String aux = "";
-        for (String rowOfSeat : rowOfSeats) {
-            aux = aux.concat(rowOfSeat);
+// PART TWO : We deal with the simulation of creating customers   
+    
+ /**
+ *  Here we create an ArrayList with 30 random full names (first name + " " + lastName)
+ *  that we need in order to simulate the creation of spectators
+ * @author Ivan
+ */
+    
+    // We create an ArrayList of Spectators which will be stored in the CinemaCustomers class as an attibute
+    public CinemaCustomers create30randomSpectators(){
+        // remember that the only attribute for CinemaCustomers is an ArrayList of Spectators
+        // that means that you could create the list, and then use it as a parameter and thus, avoid using the empty constructor
+        ArrayList<Spectator> temporaryCollectionSpectators = new ArrayList<>();
+        ArrayList<String> names4spectators = create30randomFullNames();
+        for (int i = 0; i < names4spectators.size(); i++) {
+            String name2useInConstructor = names4spectators.get(i);
+            Spectator auxSpectator2add = new Spectator(name2useInConstructor, returnRandomAge(), returnRandomMoney());
+            temporaryCollectionSpectators.add(auxSpectator2add);
         }
-        return aux;
+        CinemaCustomers collectionOfSpectators = new CinemaCustomers(temporaryCollectionSpectators);
+        return collectionOfSpectators;
     }
+    
+    
+    public ArrayList<String> create30randomFullNames(){
+        ArrayList<String> thirtyRandomNames = new ArrayList();
+        for (FirstNameEnum firstName : FirstNameEnum.values()) {
+            for (LastNameEnum lastName : LastNameEnum.values()) {
+                String fullName2Add = firstName.toString().concat(" ").concat(lastName.toString());
+                thirtyRandomNames.add(fullName2Add);
+            }
+        }
+        
+        return thirtyRandomNames;
+    }
+    
+    public void display30randomFullNames(){
+        ArrayList<String> thirtyRandomNames = create30randomFullNames();
+        for (String eachRandomName : thirtyRandomNames) {
+            System.out.println(eachRandomName);
+        }
+    }
+    
+    public ArrayList<Integer> create30randomAges(){
+        ArrayList<Integer> list30ages = new ArrayList();
+                    /************************************************
+                     * "Java Generate Random Number Between Two Given Values [duplicate]"
+                     * The following was extracted from stack overflow
+                     * @author StackOverflow
+                     */
+        Random r = new Random();
+        int low = 5;
+        int high = 97;            
+        for (int i = 0; i < 30; i++) {
+             int result = r.nextInt(high-low) + low;
+             list30ages.add(result);    
+        } 
+        return list30ages;
+    }
+    
+    public void display30randomAges(){
+       ArrayList<Integer> thirtyAges = create30randomAges();
+        System.out.println("");
+        for (Integer anIntegerofAge : thirtyAges) {
+            System.out.print(anIntegerofAge);
+            System.out.print(" ");
+        }  
+    }
+    
+    public int returnRandomAge(){
+        Random r = new Random();
+        int low = 5;
+        int high = 97;            
+        int result = r.nextInt(high-low) + low;
+        return result;
+    }
+    
+    public double returnRandomMoney(){
+        // between USD 10 and USD 50
+        Random r = new Random();
+        int low = 10;
+        int high = 50;            
+        int result = r.nextInt(high-low) + low;
+        double resultAsDouble = (double) result;
+        return resultAsDouble;
+    }
+    
+     public ArrayList<Integer> create30randomAvailableMoney(){
+        ArrayList<Integer> list30amountOfDollars = new ArrayList();
+                    /************************************************
+                     * "Java Generate Random Number Between Two Given Values [duplicate]"
+                     * The following was extracted from stack overflow
+                     * @author StackOverflow
+                     */
+        Random r = new Random();
+        int low = 10;
+        int high = 50;            
+        for (int i = 0; i < 30; i++) {
+             int result = r.nextInt(high-low) + low;
+             //System.out.println(result);
+             list30amountOfDollars.add(result);    
+        }
+         
+        return list30amountOfDollars;
+    }
+    
+    
     
     
 }

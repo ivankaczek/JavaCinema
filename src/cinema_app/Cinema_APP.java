@@ -6,7 +6,10 @@
 package cinema_app;
 
 import cinema_app.entities.CinemaAuditorium;
+import cinema_app.entities.CinemaCustomers;
 import cinema_app.entities.CinemaServices;
+import cinema_app.entities.Spectator;
+import java.util.ArrayList;
 
 /**
  *
@@ -19,48 +22,49 @@ public class Cinema_APP {
      */
     public static void main(String[] args) {
         CinemaServices serv = new CinemaServices();
-        
-        // Creation of only one row
-        String[] aRow2Test = serv.createRowOfSeats("A", 6);
-        
-        //display of only one row
-        //System.out.println(serv.displayRowOfSeats(aRow2Test));
-        
-        // let's create the row #2
-//        String[] anotherRow2Test = serv.createCorrectRowOfSeats(2);
-//        System.out.println(anotherRow2Test[0]);
-//        System.out.println(anotherRow2Test[1]);
-//        System.out.println(anotherRow2Test[2]);
-//        System.out.println(anotherRow2Test[3]);
-//        System.out.println(anotherRow2Test[4]);
-        
-//        CinemaAuditorium room4films = serv.create48seatsInExplicitWay();
-//        serv.displayTheFull8x6CinemaRoom(room4films);
-        
+             
         CinemaAuditorium room4films2ndRound = serv.create8rows6columns();
-        //serv.displayTheFull8x6CinemaRoom(room4films2ndRound);
-        
-//        System.out.println("let's print a single seat to check if the array of array works");
-//        System.out.println(room4films2ndRound.getCinemaSeats()[0][0]);
-//        System.out.println(room4films2ndRound.getCinemaSeats()[1][1]);
-//        System.out.println(room4films2ndRound.getCinemaSeats()[2][2]);
-        
+               
         serv.displayTheFull8x6CinemaRoom(room4films2ndRound);
+        
+       // now let's deal with the creation and storage of 30 customers
+       
+       // I need an auxiliary array   WHICH I DON'T KNOW WHERE TO STORE 
+      // with the 30 names that I'll use as attributes for my spectators
+       
+        ArrayList<String> temporaryArrayWith30FullNames = serv.create30randomFullNames();
+        
+        // Now let's check if the collection of spectators actually worked
+        
+        CinemaCustomers aSaturdayNightCollectionOfSpectators = serv.create30randomSpectators();
+        
+        // let's see if we actually have something inside that array of Spectators
+        
+        System.out.println(aSaturdayNightCollectionOfSpectators.getListOfSpectators().get(3).toString());
+        for (Spectator singleSpectator : aSaturdayNightCollectionOfSpectators.getListOfSpectators()) {
+            System.out.println(singleSpectator.toString());
+        }
         
     }
     
 }
 
 /*
-Nos piden hacer un programa sobre un Cine, que tiene una sala con un conjunto de
-asientos (8 filas por 6 columnas). De Cine nos interesa conocer la película que se está
-reproduciendo, la sala con los espectadores y el precio de la entrada. Luego, de las
-películas nos interesa saber el título, duración, edad mínima y director. Por último, del
-espectador, nos interesa saber su nombre, edad y el dinero que tiene disponible.
-Para representar la sala con los espectadores vamos a utilizar una matriz. Los asientos
-son etiquetados por una letra y un número la fila A1 empieza al final del mapa como se
-muestra en la tabla. También deberemos saber si el asiento está ocupado por un
-espectador o no, si esta ocupado se muestra una X, sino un espacio vacío.
+Nos piden hacer un programa sobre un Cine, que tiene una sala con un conjunto de asientos (8 filas por 6 columnas). 
+De Cine nos interesa conocer    la película que se está reproduciendo, 
+                                la sala con los espectadores y el 
+                                precio de la entrada. 
+Luego, de las películas nos interesa saber      el título, 
+                                                duración, 
+                                                edad mínima y 
+                                                director. 
+Por último, del espectador, nos interesa saber      su nombre, 
+                                                    edad y el 
+                                                    dinero que tiene disponible.
+Para representar la sala con los espectadores vamos a utilizar una matriz. Los asientos son etiquetados por una letra y un número 
+la fila A1 empieza al final del mapa como se muestra en la tabla. 
+También deberemos saber si el asiento está ocupado por un espectador o no, 
+si esta ocupado se muestra una X, sino un espacio vacío.
 8 A X | 8 B X | 8 C X | 8 D | 8 E X | 8 F X
 7 A X | 7 B X | 7 C X | 7 D X | 7 E | 7 F X
 6 A | 6 B X | 6 C | 6 D X | 6 E X | 6 F
