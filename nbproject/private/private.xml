@@ -5,12 +5,12 @@
         <group>
             <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/entities/CinemaServices.java</file>
             <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/entities/Spectator.java</file>
-            <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/enums/FirstNameEnum.java</file>
+            <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/entities/CinemaManager.java</file>
             <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/entities/CinemaAuditorium.java</file>
             <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/entities/Film.java</file>
+            <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/entities/CinemaSeat.java</file>
             <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/entities/FilmCatalogue.java</file>
             <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/entities/CinemaCustomers.java</file>
-            <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/enums/LastNameEnum.java</file>
             <file>file:/C:/Users/Ivan/Documents/NetBeansProjects/Cinema_APP/src/cinema_app/Cinema_APP.java</file>
         </group>
     </open-files>

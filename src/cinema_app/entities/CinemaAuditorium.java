@@ -5,13 +5,46 @@
  */
 package cinema_app.entities;
 
-/**
- *
+import java.util.ArrayList;
+
+/* *
+ * 
  * @author Ivan
  */
 public class CinemaAuditorium {
-    // I hardcode this since I'm only working with and auditorioum with 8 rows of 6 seats (columns) each
-    private String[][] cinemaSeats = new String[8][6];
+    private ArrayList<CinemaSeat> seatsInCinema;
+
+    // ATTENTION: This has been modified in order to initialize the ArrayList when calling empty constructor
+    public CinemaAuditorium() {
+        seatsInCinema = new ArrayList<>();
+    }
+
+    public CinemaAuditorium(ArrayList<CinemaSeat> seatsInCinema) {
+        this.seatsInCinema = seatsInCinema;
+    }
+
+    public ArrayList<CinemaSeat> getSeatsInCinema() {
+        return seatsInCinema;
+    }
+
+    public void setSeatsInCinema(ArrayList<CinemaSeat> seatsInCinema) {
+        this.seatsInCinema = seatsInCinema;
+    }
+
+    @Override
+    public String toString() {
+        return "CinemaAuditorium{" + "seatsInCinema=" + seatsInCinema + '}';
+    }
+    
+    
+    
+}
+
+/*
+Here I recall, just to learn, the first code, which was VERY DIFFICULT TO MANIPULATE
+After code revision with the teacher, I understood that it is easiear to manipulate an Array and use the matrix only for printing
+
+ private String[][] cinemaSeats = new String[8][6];
 
     public CinemaAuditorium() {
     }
@@ -28,11 +61,10 @@ public class CinemaAuditorium {
     public String toString() {
         return "CinemaAuditorium{" + "cinemaSeats=" + cinemaSeats + '}';
     }
-    
-    
-    
-    
-}
+
+*/
+
+
 /*
 Nos piden hacer un programa sobre un Cine, que tiene una sala con un conjunto de
 asientos (8 filas por 6 columnas). De Cine nos interesa conocer la película que se está

@@ -8,6 +8,8 @@ package cinema_app.entities;
 import cinema_app.enums.FirstNameEnum;
 import cinema_app.enums.LastNameEnum;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -16,58 +18,115 @@ import java.util.Random;
  */
 public class CinemaServices {
     
-    // This 2 attributes are used to create the array with the seats
-    private String columnLetter[] = {"A","B","C","D","E","F"};
-    private String rowNumber[] = {"1","2","3","4","5","6","7","8"};
+    // This 2 attributes are used to create(we no longer use to create, but mayble display) the array with the seats
+    private String[] columnLetter = {"A","B","C","D","E","F"};
+    private int amountOfRows = 8;
+    private int numberOfSeats4auditorium = amountOfRows*columnLetter.length;
+    private String[] all48seatCodes = new String[numberOfSeats4auditorium];
+
+    public String[] getAll48seatCodes() {
+        return all48seatCodes;
+    }
+
+    // Attention: I modify this with the previously coded algorith
+    public void setAll48seatCodes() {
+        this.all48seatCodes = createAllTheSeatCodes();
+    }
    
+    
+    
+    
+    
     @SuppressWarnings("empty-statement")
     
-    // PART ONE : create and display the arrays with seats
+    // PART 1 : creating the seats in the CinemaAuditorium
     
-    public String[] createCorrectRowOfSeats(int numberOfRow){
-        String[] correctRowOfSeats = new String[columnLetter.length];
-        int i = 0;
-        for (String charact : columnLetter) {
-            correctRowOfSeats[i]=String.valueOf(numberOfRow).concat(charact).concat(" ");
-            i++;
-        }
-        return correctRowOfSeats;
-    }
-    
-    public CinemaAuditorium create8rows6columns(){
-        //remember we have 8 rows and 6 columns
-        // rows: 1,2, ... , 8
-        // columns: A,B ... F
-        String[][] temporary8x6Array = new String[8][6];
-        // for each row (1,2, ... ,8) I need to create 6 seats (A to F)
-        for (int i = 0; i < rowNumber.length; i++) {
-            int auxNumberInRow = rowNumber.length - i;
-            temporary8x6Array[i]= createCorrectRowOfSeats(auxNumberInRow);
-        }
-        //}
+    public CinemaAuditorium create48emptySeats(){
+        //  I feel curious to know if this method is or not efficient
         CinemaAuditorium the48seats = new CinemaAuditorium();
-       the48seats.setCinemaSeats(temporary8x6Array);
-       return the48seats;
-        
-    }
-    
-   public void displayTheFull8x6CinemaRoom(CinemaAuditorium room){
-       String auxRow2bePrinted = "";
-       for (String[] cinemaSeat : room.getCinemaSeats()) {
-           auxRow2bePrinted = displayRowOfSeats(cinemaSeat);
-           System.out.println(auxRow2bePrinted);
-       }
-   }
-   
-    public String displayRowOfSeats(String[] rowOfSeats){
-        String row2display = "| ";
-        for (String seat : rowOfSeats) {
-            row2display = row2display.concat(seat).concat(" | ");
+        for (int i = 0; i < numberOfSeats4auditorium; i++) {
+            CinemaSeat auxSeat2add = new CinemaSeat(i, false);
+            the48seats.getSeatsInCinema().add(auxSeat2add);
         }
-        return row2display;
+        return the48seats;
     }
     
-// PART TWO : We deal with the simulation of creating customers   
+    // PART 1.1     CREATE the codes that we will eventually apply to the seats 
+    //              Attention: for better display, the 48 seatCodes should be: 8A, 8B, 8C, ... 8F, 7A, 7B, 7C, ... , 7F, 6A, ... , 1F
+    //              This is easiar if we split in 8 rows, so the #n row would be: nA, nB, nC, ... , nF.
+    
+    public String[] createArrayWithCode4oneRowOfSeats(int rowNumberInCode){
+        String[] aRowOfSeats = new String[columnLetter.length];
+        for (int i = 0; i < aRowOfSeats.length; i++) {
+            String number4Code = Integer.toString(rowNumberInCode);
+            String letter4Code = columnLetter[i];
+            String auxSeatCode = number4Code.concat(letter4Code);
+            aRowOfSeats[i] = auxSeatCode;
+        } 
+        return aRowOfSeats;
+    }
+    
+    public String[] createAllTheSeatCodes(){
+       String[] allCodes = new String[numberOfSeats4auditorium]; 
+        for (int i = 0; i < amountOfRows; i++) {
+            int codeOfTheRow2beCreated = amountOfRows - i;
+            String[] auxStringWith6codes = createArrayWithCode4oneRowOfSeats(codeOfTheRow2beCreated);
+            for (int j = 0; j < columnLetter.length; j++) {
+                int index2set = i*columnLetter.length + j;
+                allCodes[index2set] = auxStringWith6codes[j];
+            }
+        }
+       return allCodes;
+    }
+    
+    public CinemaAuditorium createAuditoriumFromListOfSeatCodes(String[] everySeatCode){
+        // I already have an array with the codes in the correct order
+        // I need to create a collection of objects CinemaSeats, which is the attribute for CinemaAuditorium
+        ArrayList<CinemaSeat> aCollectionOfSeats = new ArrayList<>();
+        int seatIndexCounter = 0;
+        for (String eachSeatCode : everySeatCode) {
+            CinemaSeat auxSeat2add = new CinemaSeat(seatIndexCounter, false, eachSeatCode);
+            aCollectionOfSeats.add(auxSeat2add);
+            seatIndexCounter++;
+        }
+        return new CinemaAuditorium(aCollectionOfSeats);
+    }
+    
+   // PART 1.2: DISPLAYING SEATS, VISUAL ASPECTS
+    
+    
+    
+    public void display48emptySeats(){
+        // I need to display the results as a matrix
+        // I also need to concatenate an "X" if occupied or " " if empty
+        // I might also display a bar " | " to better show the results
+    }
+    
+  public ArrayList<String> listSeatCodes4display(CinemaAuditorium aSeatsCollection){
+      // this should include the "X" or " " according to the seat being or not occupied with someone
+      ArrayList<String> theNewList = new ArrayList();
+        for (CinemaSeat cinemaSeat : aSeatsCollection.getSeatsInCinema()) {
+             String auxCompletedCode = cinemaSeat.getSeatCode2();
+             if (cinemaSeat.isSeatWithSomeone()){
+                auxCompletedCode = auxCompletedCode.concat("X");
+            } else {
+                auxCompletedCode = auxCompletedCode.concat(" ");
+            }
+             theNewList.add(auxCompletedCode);
+        }
+      return theNewList;
+  }
+    
+  public void displayStringArrayList(ArrayList<String> stringArrayList){
+      System.out.println("");
+      System.out.println("Here we show all the codes + info if seat is occupied or not");
+      for (String string : stringArrayList) {
+          System.out.print(string + " | ");
+      }
+  }
+  
+  
+// PART THREE : We deal with the simulation of creating customers   
     
  /**
  *  Here we create an ArrayList with 30 random full names (first name + " " + lastName)
@@ -177,3 +236,62 @@ public class CinemaServices {
     
     
 }
+
+/*
+8 A X | 8 B X | 8 C X | 8 D | 8 E X | 8 F X
+7 A X | 7 B X | 7 C X | 7 D X | 7 E | 7 F X
+6 A | 6 B X | 6 C | 6 D X | 6 E X | 6 F
+5 A X | 5 B | 5 C X | 5 D X | 5 E X | 5 F X
+4 A X | 4 B X | 4 C X | 4 D X | 4 E X | 4 F X
+3 A | 3 B X | 3 C X | 3 D | 3 E X | 3 F X
+2 A X | 2 B | 2 C X | 2 D X | 2 E X | 2 F
+1 A X | 1 B X | 1 C X | 1 D X | 1 E X | 1 F X
+*/
+
+/*
+// THE FIRST IDEA WAS THIS. I was working with an Array of Arrays which proved very difficult to work with
+// PART ONE : create and display the arrays with seats
+    
+    public String[] createCorrectRowOfSeats(int numberOfRow){
+        String[] correctRowOfSeats = new String[columnLetter.length];
+        int i = 0;
+        for (String charact : columnLetter) {
+            correctRowOfSeats[i]=String.valueOf(numberOfRow).concat(charact).concat(" ");
+            i++;
+        }
+        return correctRowOfSeats;
+    }
+    
+    public CinemaAuditorium create8rows6columns(){
+        //remember we have 8 rows and 6 columns
+        // rows: 1,2, ... , 8
+        // columns: A,B ... F
+        String[][] temporary8x6Array = new String[8][6];
+        // for each row (1,2, ... ,8) I need to create 6 seats (A to F)
+        for (int i = 0; i < rowNumber.length; i++) {
+            int auxNumberInRow = rowNumber.length - i;
+            temporary8x6Array[i]= createCorrectRowOfSeats(auxNumberInRow);
+        }
+        //}
+        CinemaAuditorium the48seats = new CinemaAuditorium();
+       the48seats.setCinemaSeats(temporary8x6Array);
+       return the48seats;
+        
+    }
+    
+   public void displayTheFull8x6CinemaRoom(CinemaAuditorium room){
+       String auxRow2bePrinted = "";
+       for (String[] cinemaSeat : room.getCinemaSeats()) {
+           auxRow2bePrinted = displayRowOfSeats(cinemaSeat);
+           System.out.println(auxRow2bePrinted);
+       }
+   }
+   
+    public String displayRowOfSeats(String[] rowOfSeats){
+        String row2display = "| ";
+        for (String seat : rowOfSeats) {
+            row2display = row2display.concat(seat).concat(" | ");
+        }
+        return row2display;
+    }
+*/
