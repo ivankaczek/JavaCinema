@@ -10,6 +10,7 @@ import cinema_app.entities.CinemaCustomers;
 import cinema_app.entities.CinemaServices;
 import cinema_app.entities.Spectator;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -35,7 +36,7 @@ public class Cinema_APP {
         // now let's create the full auditorium
         CinemaAuditorium room1 = serv.createAuditoriumFromListOfSeatCodes(serv.createAllTheSeatCodes());
         ArrayList<String> temporaryListJust2check = serv.listSeatCodes4display(room1);
-        serv.displayStringArrayList(temporaryListJust2check);
+        //serv.displayStringArrayList(temporaryListJust2check);
         
         // let's 'occupy' some seats to check if it works
         room1.getSeatsInCinema().get(0).setSeatWithSomeone(true);
@@ -46,8 +47,23 @@ public class Cinema_APP {
         
         // and let's show again the seats to check if it worked
         ArrayList<String> anotherTemporaryListJust2check = serv.listSeatCodes4display(room1);
-         serv.displayStringArrayList(anotherTemporaryListJust2check);
+        // serv.displayStringArrayList(anotherTemporaryListJust2check);
+         serv.display48seatsCavemanMethod(anotherTemporaryListJust2check);
+         System.out.println("");
+         System.out.println("now let's do the same with a better code");
+         serv.display48seatsHomoSapiensMethod(anotherTemporaryListJust2check);
         
+//         List<String> list01 = serv.separateJustOneRowOfSeats(temporaryListJust2check,12,18);
+//         for (String string : list01) {
+//             System.out.println(string);
+//        }
+//         System.out.println("");
+//         System.out.println("***");
+//         System.out.println(list01);
+//         String a = serv.concatJustOneRowOfSeats(list01);
+//         System.out.println(a);
+        //System.out.println(serv.displayJustOneRowOfSeats(list01));
+         
         // let's check and bring info about a seat
         
         //System.out.println(room1.getSeatsInCinema().get(25).toString());

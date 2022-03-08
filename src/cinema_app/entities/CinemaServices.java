@@ -92,16 +92,65 @@ public class CinemaServices {
         return new CinemaAuditorium(aCollectionOfSeats);
     }
     
+    
    // PART 1.2: DISPLAYING SEATS, VISUAL ASPECTS
     
-    
-    
-    public void display48emptySeats(){
-        // I need to display the results as a matrix
-        // I also need to concatenate an "X" if occupied or " " if empty
-        // I might also display a bar " | " to better show the results
+    // once I undestood the logic it is easy to do a better code
+    public void display48seatsHomoSapiensMethod(ArrayList<String> the48codes){
+        int amountOfColumns = columnLetter.length;
+        for (int i = 0; i < amountOfRows; i++) {
+            List<String> theRow2trim = separateJustOneRowOfSeats(the48codes, amountOfColumns*i, (amountOfColumns*i)+amountOfColumns);
+            String aux2print = concatJustOneRowOfSeats(theRow2trim);
+            System.out.println(aux2print);
+        }
+        System.out.println("");
     }
     
+    public void display48seatsCavemanMethod(ArrayList<String> the48codes){
+        // I need to display the results as a matrix
+        // I also need to concatenate an "X" if occupied or " " if empty    (done)
+        // I might also display a bar " | " to better show the results
+        List<String> listRow8 = separateJustOneRowOfSeats(the48codes, 0, 6);
+        List<String> listRow7 = separateJustOneRowOfSeats(the48codes, 6, 12);
+        List<String> listRow6 = separateJustOneRowOfSeats(the48codes, 12, 18);
+        List<String> listRow5 = separateJustOneRowOfSeats(the48codes, 18, 24);
+        List<String> listRow4 = separateJustOneRowOfSeats(the48codes, 24, 30);
+        List<String> listRow3 = separateJustOneRowOfSeats(the48codes, 30, 36);
+        List<String> listRow2 = separateJustOneRowOfSeats(the48codes, 36, 42);
+        List<String> listRow1 = separateJustOneRowOfSeats(the48codes, 42, 48);
+        String s8 = concatJustOneRowOfSeats(listRow8);
+        String s7 = concatJustOneRowOfSeats(listRow7);
+        String s6 = concatJustOneRowOfSeats(listRow6);
+        String s5 = concatJustOneRowOfSeats(listRow5);
+        String s4 = concatJustOneRowOfSeats(listRow4);
+        String s3 = concatJustOneRowOfSeats(listRow3);
+        String s2 = concatJustOneRowOfSeats(listRow2);
+        String s1 = concatJustOneRowOfSeats(listRow1);
+        System.out.println(s8);
+        System.out.println(s7);
+        System.out.println(s6);
+        System.out.println(s5);
+        System.out.println(s4);
+        System.out.println(s3);
+        System.out.println(s2);
+        System.out.println(s1);
+    }
+    
+    public String concatJustOneRowOfSeats(List<String> theTrimmedList){
+        String text4display = "| ";
+        for (String code : theTrimmedList) {
+            text4display = text4display.concat(code).concat(" | ");
+        }
+        return text4display;
+    }
+    
+    // We get a trimmed list with only the 6 seats in one row
+    public List<String> separateJustOneRowOfSeats(ArrayList<String> the48codes, int startHereInclusive, int endHereExclusive){
+        List<String> josephMushroomDa1st = (List) the48codes;
+        return josephMushroomDa1st.subList(startHereInclusive, endHereExclusive);
+    }
+    
+    // We add "X" or " " just to display/print. The attribute seatCode remains the same.
   public ArrayList<String> listSeatCodes4display(CinemaAuditorium aSeatsCollection){
       // this should include the "X" or " " according to the seat being or not occupied with someone
       ArrayList<String> theNewList = new ArrayList();
@@ -117,12 +166,14 @@ public class CinemaServices {
       return theNewList;
   }
     
+  // More general: just to check if sth works
   public void displayStringArrayList(ArrayList<String> stringArrayList){
       System.out.println("");
       System.out.println("Here we show all the codes + info if seat is occupied or not");
       for (String string : stringArrayList) {
           System.out.print(string + " | ");
       }
+      System.out.println(""); // If I miss this line next prints will be displayed in the same line as this.
   }
   
   
