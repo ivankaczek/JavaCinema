@@ -7,6 +7,9 @@ package cinema_app;
 
 import cinema_app.entities.CinemaAuditorium;
 import cinema_app.entities.CinemaCustomers;
+import cinema_app.entities.CinemaManager;
+import cinema_app.entities.CinemaPrices;
+import cinema_app.entities.CinemaSeat;
 import cinema_app.entities.CinemaServices;
 import cinema_app.entities.Spectator;
 import java.util.ArrayList;
@@ -45,6 +48,10 @@ public class Cinema_APP {
         room1.getSeatsInCinema().get(3).setSeatWithSomeone(true);
         room1.getSeatsInCinema().get(4).setSeatWithSomeone(true);
         
+        CinemaSeat seat01 = room1.getSeatsInCinema().get(5);
+        System.out.println("let's check if seat with index 5 is empty");
+        System.out.println("it is " + serv.checkIfSeatIsEmpty(seat01) + " that it's empty");
+        
         // and let's show again the seats to check if it worked
         ArrayList<String> anotherTemporaryListJust2check = serv.listSeatCodes4display(room1);
         // serv.displayStringArrayList(anotherTemporaryListJust2check);
@@ -53,6 +60,16 @@ public class Cinema_APP {
          System.out.println("now let's do the same with a better code");
          serv.display48seatsHomoSapiensMethod(anotherTemporaryListJust2check);
         
+    CinemaManager nextSaturdayFilm = new CinemaManager();
+    nextSaturdayFilm.setFilmPlayingNow(serv.hardcodeOneFilm());
+    nextSaturdayFilm.setRoom4thisFilm(room1);
+    nextSaturdayFilm.setFilmTicketPrice(CinemaPrices.getPr04());
+    
+        System.out.println("");
+        serv.displayInfoAboutNextMovieManagement(nextSaturdayFilm);
+    
+         
+         
 //         List<String> list01 = serv.separateJustOneRowOfSeats(temporaryListJust2check,12,18);
 //         for (String string : list01) {
 //             System.out.println(string);
@@ -89,7 +106,14 @@ BUILD SUCCESSFUL (total time: 0 seconds)
 //        for (Spectator singleSpectator : aSaturdayNightCollectionOfSpectators.getListOfSpectators()) {
 //            System.out.println(singleSpectator.toString());
 //        }
-        
+       
+
+
+
+
+
+
+
     }
     
 }
@@ -107,6 +131,7 @@ Nos piden hacer un programa sobre un Cine, que tiene una sala con un conjunto de
 De Cine nos interesa conocer    la película que se está reproduciendo, 
                                 la sala con los espectadores y el 
                                 precio de la entrada. 
+
 Luego, de las películas nos interesa saber      el título, 
                                                 duración, 
                                                 edad mínima y 

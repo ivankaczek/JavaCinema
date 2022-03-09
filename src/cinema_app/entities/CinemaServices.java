@@ -39,7 +39,9 @@ public class CinemaServices {
     
     @SuppressWarnings("empty-statement")
     
-    // PART 1 : creating the seats in the CinemaAuditorium
+    // PART 1: CREATING SEATS AND RELATED CODES
+    
+        // PART 1.0 :   Create empty seats in the CinemaAuditorium
     
     public CinemaAuditorium create48emptySeats(){
         //  I feel curious to know if this method is or not efficient
@@ -51,10 +53,8 @@ public class CinemaServices {
         return the48seats;
     }
     
-    // PART 1.1     CREATE the codes that we will eventually apply to the seats 
-    //              Attention: for better display, the 48 seatCodes should be: 8A, 8B, 8C, ... 8F, 7A, 7B, 7C, ... , 7F, 6A, ... , 1F
-    //              This is easiar if we split in 8 rows, so the #n row would be: nA, nB, nC, ... , nF.
-    
+        // PART 1.1     CREATE the SeatCodes that we will eventually apply to the seats 
+        
     public String[] createArrayWithCode4oneRowOfSeats(int rowNumberInCode){
         String[] aRowOfSeats = new String[columnLetter.length];
         for (int i = 0; i < aRowOfSeats.length; i++) {
@@ -79,6 +79,8 @@ public class CinemaServices {
        return allCodes;
     }
     
+        // PART 1.2     Create a collection of seats (aka a CinemaAuditorium object)starting with the code of each seat
+    
     public CinemaAuditorium createAuditoriumFromListOfSeatCodes(String[] everySeatCode){
         // I already have an array with the codes in the correct order
         // I need to create a collection of objects CinemaSeats, which is the attribute for CinemaAuditorium
@@ -93,9 +95,11 @@ public class CinemaServices {
     }
     
     
-   // PART 1.2: DISPLAYING SEATS, VISUAL ASPECTS
+   // PART 2: DISPLAYING SEATS, VISUAL ASPECTS
     
-    // once I undestood the logic it is easy to do a better code
+        // PART 2.1:   Displaying seats in the console
+    
+        // once I undestood the logic it is easy to do a better code
     public void display48seatsHomoSapiensMethod(ArrayList<String> the48codes){
         int amountOfColumns = columnLetter.length;
         for (int i = 0; i < amountOfRows; i++) {
@@ -144,14 +148,16 @@ public class CinemaServices {
         return text4display;
     }
     
-    // We get a trimmed list with only the 6 seats in one row
+       
     public List<String> separateJustOneRowOfSeats(ArrayList<String> the48codes, int startHereInclusive, int endHereExclusive){
+         // We get a trimmed list with only the 6 seats in one row
         List<String> josephMushroomDa1st = (List) the48codes;
         return josephMushroomDa1st.subList(startHereInclusive, endHereExclusive);
     }
     
-    // We add "X" or " " just to display/print. The attribute seatCode remains the same.
+        
   public ArrayList<String> listSeatCodes4display(CinemaAuditorium aSeatsCollection){
+      // We add "X" or " " just to display/print. The attribute seatCode remains the same.
       // this should include the "X" or " " according to the seat being or not occupied with someone
       ArrayList<String> theNewList = new ArrayList();
         for (CinemaSeat cinemaSeat : aSeatsCollection.getSeatsInCinema()) {
@@ -166,7 +172,7 @@ public class CinemaServices {
       return theNewList;
   }
     
-  // More general: just to check if sth works
+    // More general: just to check if sth works
   public void displayStringArrayList(ArrayList<String> stringArrayList){
       System.out.println("");
       System.out.println("Here we show all the codes + info if seat is occupied or not");
@@ -176,8 +182,23 @@ public class CinemaServices {
       System.out.println(""); // If I miss this line next prints will be displayed in the same line as this.
   }
   
+        // PART 2.2: Displaying info about management of the movies
   
-// PART THREE : We deal with the simulation of creating customers   
+  public void displayInfoAboutNextMovieManagement(CinemaManager nextMovie){
+      System.out.println("");
+      System.out.println("IMPORTANT INFO ABOUT THIS MOVIE MANAGEMENT");
+      System.out.println("------------------------------------------");
+      System.out.println("Current movie on billboard: " + nextMovie.getFilmPlayingNow().getFilmTitle() + 
+              " by " + nextMovie.getFilmPlayingNow().getFilmDirector());
+      System.out.println("Price for the ticket: USD " + nextMovie.getFilmTicketPrice() );
+      System.out.println("Auditorium for this film has already sold: THIS CODE STILL TO DO.");
+      System.out.println("------------------------------------------");
+      System.out.println("");
+  }
+  
+// PART 3: DEALING WITH CUSTOMERS  
+
+// PART 3.1 : Creating customers  
     
  /**
  *  Here we create an ArrayList with 30 random full names (first name + " " + lastName)
@@ -283,10 +304,95 @@ public class CinemaServices {
         return list30amountOfDollars;
     }
     
-    
+     // PART 3.2 Simulating the asignment of customers to seats
+     
+     /*
+        I understand that the assignation of a seat involves  
+                                a) checking age, 
+                                b) checking money, 
+                                c) checking available seat
+     */
+     
+     public boolean checkEnoughMoney(double moneySpectatorHas, double moneyTheMovieCosts){
+         boolean allesGut = false;
+         if(moneySpectatorHas >= moneyTheMovieCosts){
+             allesGut = true;
+         }     
+         return allesGut;
+     }
+     
+     public boolean checkOldEnough(int spectatorAge, int minAge4film){
+         boolean allesGut = false;
+         if(spectatorAge >= minAge4film){
+             allesGut = true;
+         }
+         return allesGut;
+     }
+     
+     // IMPORTANT: I need to check if this actually works. ID DOES :)
+     public boolean checkIfSeatIsEmpty(CinemaSeat seat){
+         boolean nodobyThere = false; //(let's assume it's occupied)
+         if(!seat.isSeatWithSomeone()){
+             nodobyThere = true;
+         }
+         return nodobyThere;
+     }
+     
+     
+     
+     
+     // We assign one customer to one seat RANDOMLY
+     // WARNING: this method might consume an EXCESS OF MEMORY
+     public CinemaAuditorium randomOneSpectatorPlacementCavemanMethod(CinemaAuditorium allSeatsbefore){
+        CinemaAuditorium allseatsafter = allSeatsbefore;
+        // first i look for an empty RANDOM seat 
+        // I do NOT want to seat everybody TOGETHER
+        int randomSeatIndex = returnRandomIndexMax47();
+        
+        
+        
+        
+        return allseatsafter;
+     }
+     
+     public int returnRandomIndexMax47(){
+        Random r = new Random();
+        int low = 0;
+        int high = 47;            
+        int result = r.nextInt(high-low) + low;
+        return result;
+    }
+     
+     // PART 4: DEALING WITH FILMS
+     
+     // PART 4.1 Creating a movie
+     
+     public Film hardcodeOneFilm(){
+         // 1h52m = 60 + 52 = 112
+         Film movie = new Film("Tacones Lejanos", "Pedro Almodovar",112, (int) CinemaPrices.getPr01());
+         
+         return movie;
+     }
     
     
 }
+
+/*
+Se debe realizar una pequeña simulación, en la que se generen muchos espectadores y
+se los ubique en los asientos aleatoriamente (no se puede ubicar un espectador donde
+ya este ocupado el asiento).
+
+Los espectadores serán ubicados de uno en uno y para ubicarlos tener en cuenta que
+sólo se podrá sentar a un espectador si tiene el dinero suficiente para pagar la entrada,
+si hay espacio libre en la sala y si tiene la edad requerida para ver la película. En caso de
+que el asiento este ocupado se le debe buscar uno libre.
+
+Al final del programa deberemos mostrar la tabla, podemos mostrarla con la letra y
+numero de cada asiento o solo las X y espacios vacíos.
+*/
+
+
+
 
 /*
 8 A X | 8 B X | 8 C X | 8 D | 8 E X | 8 F X
