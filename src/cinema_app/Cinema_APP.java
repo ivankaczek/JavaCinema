@@ -12,6 +12,7 @@ import cinema_app.entities.CinemaPrices;
 import cinema_app.entities.CinemaSeat;
 import cinema_app.entities.CinemaServices;
 import cinema_app.entities.Spectator;
+import cinema_app.placement_services.CinemaPlacementServices;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,79 +27,133 @@ public class Cinema_APP {
      */
     public static void main(String[] args) {
         
-        // PART ONE: Dealing with the cinema room
-        
         CinemaServices serv = new CinemaServices();
+        CinemaPlacementServices place = new CinemaPlacementServices();
         
-//        String[] the48kodes = serv.createAllTheSeatCodes();
-//        
-//        for (String oneCode : the48kodes) {
-//            System.out.print(oneCode+" ");
-//        }
-        
-        // now let's create the full auditorium
-        CinemaAuditorium room1 = serv.createAuditoriumFromListOfSeatCodes(serv.createAllTheSeatCodes());
-        ArrayList<String> temporaryListJust2check = serv.listSeatCodes4display(room1);
-        //serv.displayStringArrayList(temporaryListJust2check);
-        
-        // let's 'occupy' some seats to check if it works
-        room1.getSeatsInCinema().get(0).setSeatWithSomeone(true);
-        room1.getSeatsInCinema().get(1).setSeatWithSomeone(true);
-        room1.getSeatsInCinema().get(2).setSeatWithSomeone(true);
-        room1.getSeatsInCinema().get(3).setSeatWithSomeone(true);
-        room1.getSeatsInCinema().get(4).setSeatWithSomeone(true);
-        
-        CinemaSeat seat01 = room1.getSeatsInCinema().get(5);
-        System.out.println("let's check if seat with index 5 is empty");
-        System.out.println("it is " + serv.checkIfSeatIsEmpty(seat01) + " that it's empty");
-        
-        // and let's show again the seats to check if it worked
-        ArrayList<String> anotherTemporaryListJust2check = serv.listSeatCodes4display(room1);
-        // serv.displayStringArrayList(anotherTemporaryListJust2check);
-         serv.display48seatsCavemanMethod(anotherTemporaryListJust2check);
-         System.out.println("");
-         System.out.println("now let's do the same with a better code");
-         serv.display48seatsHomoSapiensMethod(anotherTemporaryListJust2check);
-        
-    CinemaManager nextSaturdayFilm = new CinemaManager();
-    nextSaturdayFilm.setFilmPlayingNow(serv.hardcodeOneFilm());
-    nextSaturdayFilm.setRoom4thisFilm(room1);
-    nextSaturdayFilm.setFilmTicketPrice(CinemaPrices.getPr04());
+    //  1: Dealing with the CINEMA ROOM
     
-        System.out.println("");
+        CinemaAuditorium room1 = serv.createFullEmptyAuditorium();
+     
+    //  2: Specification about next Saturday film projection BEFORE SELLING TICKETS
+    
+        CinemaManager nextSaturdayFilm = serv.generateSpecificCinemaEventExemple(room1);
+  
         serv.displayInfoAboutNextMovieManagement(nextSaturdayFilm);
     
-         
-         
-//         List<String> list01 = serv.separateJustOneRowOfSeats(temporaryListJust2check,12,18);
-//         for (String string : list01) {
-//             System.out.println(string);
-//        }
-//         System.out.println("");
-//         System.out.println("***");
-//         System.out.println(list01);
-//         String a = serv.concatJustOneRowOfSeats(list01);
-//         System.out.println(a);
-        //System.out.println(serv.displayJustOneRowOfSeats(list01));
-         
-        // let's check and bring info about a seat
-        
-        //System.out.println(room1.getSeatsInCinema().get(25).toString());
-        
-        /*
-        It apparently works since I get to following output
-        run:
-CinemaSeat{seatIndexInArray=25, seatWithSomeone=false, seatSpectatorName=null, seatCode2=4B}
-BUILD SUCCESSFUL (total time: 0 seconds)
-        */
-        
-        // PART TWO: Dealing with the spectators
-       
-        ArrayList<String> temporaryArrayWith30FullNames = serv.create30randomFullNames();
-        
-        // Now let's check if the collection of spectators actually worked
-        
+    //  3.1: List with potential clients before knowing if they have the available money and the age to buy the movie ticket     
+               
         CinemaCustomers aSaturdayNightCollectionOfSpectators = serv.create30randomSpectators();
+        
+    //  3.2: List with customers that have both the money to pay the ticket and the minimum age    
+        
+        int minRequiredAge = nextSaturdayFilm.getFilmPlayingNow().getFilmMininumAge();
+        double ticketPrice4nextSaturday = nextSaturdayFilm.getFilmTicketPrice();
+        CinemaCustomers spectatorsAgeMoney = serv.filterCustomersAgeMoney(aSaturdayNightCollectionOfSpectators, minRequiredAge, ticketPrice4nextSaturday);
+    
+    //  3.3 Apply that filtered list to the CinemaManager attribute
+
+        nextSaturdayFilm.setSpectatorsWithTicket(spectatorsAgeMoney.getListOfSpectators());
+        
+    //  3.4 Specification about next Saturday film projection AFTER SELLING TICKETS
+    
+        serv.displayInfoAboutNextMovieManagementAfterSellingTickets(nextSaturdayFilm);
+    
+    //  ?.0 Placing everybody
+
+//        place.getRoomAfterPlacingEverySpectator(nextSaturdayFilm);
+//        System.out.println("");
+//        System.out.println("This is what happens after placing " + nextSaturdayFilm.getSpectatorsWithTicket().size() + " people");
+//        serv.displayAuditoriumInConsole(nextSaturdayFilm.getRoom4thisFilm());
+        
+    //  4:  Placing one person    
+    
+    //  4.0 Placing the 1st person in the list
+    
+    //  4.0.0 We show the room BEFORE and AFTER we place the first person (that's why I choose n = 0)
+    
+        int amountPeople2place = nextSaturdayFilm.getSpectatorsWithTicket().size();
+        
+        for (int i = 0; i < amountPeople2place; i++) {
+            System.out.println("Simulation for placement of customer #" + (i+1) + "/" + amountPeople2place);
+            System.out.println("----------------------------------------");
+            System.out.println("");
+            place.displayVisuallyWhatHappens_AFTER_PlacingSpectatorIndex_n(nextSaturdayFilm, i);
+        }
+    
+    
+        //place.displayVisuallyWhatHappens_B4_PlacingSpectatorIndex_n(nextSaturdayFilm, 0);
+        //place.displayVisuallyWhatHappens_AFTER_PlacingSpectatorIndex_n(nextSaturdayFilm, 0);
+        
+     //  4.0.1 We show the room BEFORE and AFTER we place the first person (that's why I choose n = 1)
+    
+        //place.displayVisuallyWhatHappens_B4_PlacingSpectatorIndex_n(nextSaturdayFilm, 1);
+        //place.displayVisuallyWhatHappens_AFTER_PlacingSpectatorIndex_n(nextSaturdayFilm, 1);   
+        
+        
+        
+        
+        
+        
+        
+    //  4.1 Exemple: I place Spectator #7 in the list (that correspond to index #6)
+    
+//        int indexOfSpect = 6;
+//        Spectator spectatorIndex06 = place.getSpectatorIndex_n(nextSaturdayFilm, indexOfSpect);
+//        CinemaAuditorium roomB4spect06 = place.getRoomB4SpectatorIndex_n(nextSaturdayFilm, indexOfSpect);
+//        CinemaAuditorium roomAfterspect06 = place.getRoomAfterSpectatorIndex_n(nextSaturdayFilm, indexOfSpect);
+        
+//        System.out.println("");
+//        System.out.println("Let's see what happens BEFORE we place spectator #" + indexOfSpect + " called " + spectatorIndex06.getSpectatorFullName());
+//        System.out.println("");
+//        System.out.println("Here follows a display of the room");
+//        serv.displayAuditoriumInConsole(roomB4spect06);
+//        System.out.println("");
+        
+        
+//        System.out.println("");
+//        System.out.println("Let's see what happens after we place spectator #" + indexOfSpect + " called " + spectatorIndex06.getSpectatorFullName());
+//        System.out.println("");
+//        System.out.println("Here follows a display of the room");
+//        serv.displayAuditoriumInConsole(roomAfterspect06);
+//        System.out.println("");
+//        
+//        place.displayRoomB4andAfterPlacingSpectatorIndex_n(nextSaturdayFilm, 8);
+        
+        
+        
+        
+    //  4: We seat 4 (four) customers in the room
+    
+        //CinemaAuditorium roomAfter4placements =  serv.place4SpectatorsInListCavemanMethod(room1, spectatorsAgeMoney);
+        
+        //serv.displayAuditoriumInConsole(roomAfter4placements);
+
+
+
+
+
+
+
+
+
+
+
+    
+        
+        
+        
+        //System.out.println("Here follows a list with the spectators who are old enough to watch the film AND have the money for it");
+//        ArrayList<Spectator> people = serv.filterSpectatorsAge(aSaturdayNightCollectionOfSpectators.getListOfSpectators(), nextSaturdayFilm.getFilmPlayingNow().getFilmMininumAge());
+//        System.out.println("");
+//         ArrayList<Spectator> peopleWithMoney = serv.filterSpectatorsMoney(people,nextSaturdayFilm.getFilmTicketPrice());
+//        for (Spectator spectator : peopleWithMoney) {
+//            System.out.println(spectator.toString());
+//        }
+        //System.out.println("");
+        
+        //Spectator spectatorReady = peopleWithMoney.get(2);
+        
+        //serv.placeOneSpectatorRandomlyTry3times(room1, spectatorReady);
         
         // let's see if we actually have something inside that array of Spectators
         
@@ -106,11 +161,34 @@ BUILD SUCCESSFUL (total time: 0 seconds)
 //        for (Spectator singleSpectator : aSaturdayNightCollectionOfSpectators.getListOfSpectators()) {
 //            System.out.println(singleSpectator.toString());
 //        }
+
+//      let's check out of that list with spectators, WHICH ONES HAVE THE AGE & THE MONEY TO BUY A TICKET
+//      And that's part of my CinemaManager attribute
+//      So now I need an ArrayList<Spectators> to use as that attribute
        
+        
+        
+       
+        Spectator randomSpect01 = aSaturdayNightCollectionOfSpectators.getListOfSpectators().get(3);
+        Spectator randomSpect02 = aSaturdayNightCollectionOfSpectators.getListOfSpectators().get(5);
+        Spectator randomSpect03 = aSaturdayNightCollectionOfSpectators.getListOfSpectators().get(7);
+        Spectator randomSpect04 = aSaturdayNightCollectionOfSpectators.getListOfSpectators().get(8);
 
+//        CinemaAuditorium hallAfterOnePlacement = serv.randomOneSpectatorPlacementCavemanMethod(room1, randomSpect01);
+//        hallAfterOnePlacement = serv.randomOneSpectatorPlacementCavemanMethod(room1, randomSpect02);
+//        hallAfterOnePlacement = serv.randomOneSpectatorPlacementCavemanMethod(room1, randomSpect03);
+//        hallAfterOnePlacement = serv.randomOneSpectatorPlacementCavemanMethod(room1, randomSpect04);
 
+        // I could code a method to sit them ALL
+        
+        // I only want to watch the room before and after the placement
+        
+        
+//serv.displayAuditoriumInConsole(room1);
 
+//serv.placeOneSpectatorRandomlyTry3times(room1, spectatorReady);
 
+//serv.displayAuditoriumInConsole(room1);
 
 
 

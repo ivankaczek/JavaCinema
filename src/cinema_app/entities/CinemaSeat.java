@@ -30,8 +30,14 @@ public class CinemaSeat {
         this.seatWithSomeone = seatWithSomeone; 
     }
 
-    // I specifically need this constructor for the method xxxxxxxxxxxxxCOMPLETE HERE XXXXXXXXX
+   
     public CinemaSeat(int seatIndexInArray, boolean seatWithSomeone, String seatCode2) {
+        /*
+                I specifically need this constructor for the method:
+                public CinemaAuditorium createAuditoriumFromListOfSeatCodes(String[] everySeatCode){ code here}
+                This means, I can set everything but the name in the seat (I will know later)
+        */
+       
         this.seatIndexInArray = seatIndexInArray;
         this.seatWithSomeone = seatWithSomeone;
         this.seatCode2 = seatCode2;

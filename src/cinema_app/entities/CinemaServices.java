@@ -5,6 +5,7 @@
  */
 package cinema_app.entities;
 
+import cinema_app.enums.CinemaTicketPriceEnum;
 import cinema_app.enums.FirstNameEnum;
 import cinema_app.enums.LastNameEnum;
 import java.util.ArrayList;
@@ -87,17 +88,35 @@ public class CinemaServices {
         ArrayList<CinemaSeat> aCollectionOfSeats = new ArrayList<>();
         int seatIndexCounter = 0;
         for (String eachSeatCode : everySeatCode) {
+            /*
+                int seatIndexInArray; ----------------> we set with the counter (from 0 to amount in the list with codes)
+                boolean seatWithSomeone; -------------> false
+                String seatSpectatorName; ------------> null
+                String seatCode2; --------------------> taken from the list (in the parameter of the method)
+            */
             CinemaSeat auxSeat2add = new CinemaSeat(seatIndexCounter, false, eachSeatCode);
             aCollectionOfSeats.add(auxSeat2add);
             seatIndexCounter++;
         }
-        return new CinemaAuditorium(aCollectionOfSeats);
+        CinemaAuditorium room2return = new CinemaAuditorium(aCollectionOfSeats);
+        setAmountOccupied2zero(room2return);
+        return room2return;
+    }
+    
+    public CinemaAuditorium createFullEmptyAuditorium(){
+        return createAuditoriumFromListOfSeatCodes(createAllTheSeatCodes());
     }
     
     
    // PART 2: DISPLAYING SEATS, VISUAL ASPECTS
     
         // PART 2.1:   Displaying seats in the console
+    public void displayAuditoriumInConsole(CinemaAuditorium aCinemaRoom){
+        ArrayList<String> the48codesIneed = listSeatCodes4display(aCinemaRoom);
+        
+        display48seatsHomoSapiensMethod(the48codesIneed);
+    }
+    
     
         // once I undestood the logic it is easy to do a better code
     public void display48seatsHomoSapiensMethod(ArrayList<String> the48codes){
@@ -186,15 +205,33 @@ public class CinemaServices {
   
   public void displayInfoAboutNextMovieManagement(CinemaManager nextMovie){
       System.out.println("");
+      System.out.println("MOVIE JUST CREATED. IMPORTANT INFO:");
+      System.out.println("------------------------------------------");
+      System.out.println("Current movie on billboard: " + nextMovie.getFilmPlayingNow().getFilmTitle() + 
+              " by " + nextMovie.getFilmPlayingNow().getFilmDirector());
+      System.out.println("Price for the ticket: USD " + nextMovie.getFilmTicketPrice() );
+      System.out.println("Auditorium for this film has already sold: NO TICKETS SOLD JET.");
+      System.out.println("------------------------------------------");
+      System.out.println("");
+  }
+  
+ public void displayInfoAboutNextMovieManagementAfterSellingTickets(CinemaManager nextMovie){
+      System.out.println("");
       System.out.println("IMPORTANT INFO ABOUT THIS MOVIE MANAGEMENT");
       System.out.println("------------------------------------------");
       System.out.println("Current movie on billboard: " + nextMovie.getFilmPlayingNow().getFilmTitle() + 
               " by " + nextMovie.getFilmPlayingNow().getFilmDirector());
       System.out.println("Price for the ticket: USD " + nextMovie.getFilmTicketPrice() );
-      System.out.println("Auditorium for this film has already sold: THIS CODE STILL TO DO.");
+      System.out.println("Auditorium for this film has already sold: " + displayStringInfoPeopleWithTicket(nextMovie) + ".");
       System.out.println("------------------------------------------");
       System.out.println("");
   }
+  
+  public String displayStringInfoPeopleWithTicket(CinemaManager nextSaturdayFilm){
+        int amountSoldTickets = nextSaturdayFilm.getSpectatorsWithTicket().size();
+        String string2return = Integer.toString(amountSoldTickets) + " tickets sold";
+        return string2return;
+  }     
   
 // PART 3: DEALING WITH CUSTOMERS  
 
@@ -313,6 +350,55 @@ public class CinemaServices {
                                 c) checking available seat
      */
      
+     // AGE ISSUES **********************************
+       public boolean checkOldEnough(int spectatorAge, int minAge4film){
+         boolean allesGut = false;
+         if(spectatorAge >= minAge4film){
+             allesGut = true;
+         }
+         return allesGut;
+     }
+     
+       public CinemaCustomers filterCustomersAgeMoney(CinemaCustomers custormersBeforeFilter, int minAge, double ticketPrice){
+           ArrayList<Spectator> listBeforeFilter = custormersBeforeFilter.getListOfSpectators();
+           ArrayList<Spectator> listFilteredByAge = filterSpectatorsAge(listBeforeFilter, minAge);
+           ArrayList<Spectator> listFilteredByAgeAndMoney = filterSpectatorsMoney(listFilteredByAge, ticketPrice);
+          return new CinemaCustomers(listFilteredByAgeAndMoney);
+        }
+       
+        // Here a FILTER completeListSpectators >>> filteredListOfSpectators
+     public ArrayList<Spectator> filterSpectatorsAge (ArrayList<Spectator> fullListSpectators, int minAge) {
+         ArrayList<Spectator> filteredListSpectators = new ArrayList();
+         int spectatorsNotOldEnough = 0;
+         for (Spectator spectator2check : fullListSpectators) {
+             boolean oldEnough = checkOldEnough(spectator2check.getSpectatorAge(), minAge);
+             if (oldEnough){
+                 filteredListSpectators.add(spectator2check);
+             } else spectatorsNotOldEnough++;
+         }
+         //System.out.println(Integer.toBinaryString(spectatorsNotOldEnough) + " spectators where not old enough");
+         return filteredListSpectators;
+     }
+       
+       
+    // MONEY ISSUES ***********************************   
+     public ArrayList<Spectator> filterSpectatorsMoney (ArrayList<Spectator> fullListSpectators, double ticketPrice) {
+         ArrayList<Spectator> filteredListSpectators = new ArrayList();
+         for (Spectator spectator2check : fullListSpectators) {
+             boolean spectHasMoney = checkEnoughMoney(spectator2check.getSpectatorAvailMoney(), ticketPrice);
+             if (spectHasMoney){
+                 filteredListSpectators.add(spectator2check);
+             }
+         }
+         
+         return filteredListSpectators;
+     }
+     
+     
+     
+     
+     
+     
      public boolean checkEnoughMoney(double moneySpectatorHas, double moneyTheMovieCosts){
          boolean allesGut = false;
          if(moneySpectatorHas >= moneyTheMovieCosts){
@@ -321,16 +407,11 @@ public class CinemaServices {
          return allesGut;
      }
      
-     public boolean checkOldEnough(int spectatorAge, int minAge4film){
-         boolean allesGut = false;
-         if(spectatorAge >= minAge4film){
-             allesGut = true;
-         }
-         return allesGut;
-     }
+   
      
-     // IMPORTANT: I need to check if this actually works. ID DOES :)
+     
      public boolean checkIfSeatIsEmpty(CinemaSeat seat){
+         // Even if it's obvious... this returns TRUE if the seat is empty
          boolean nodobyThere = false; //(let's assume it's occupied)
          if(!seat.isSeatWithSomeone()){
              nodobyThere = true;
@@ -338,20 +419,246 @@ public class CinemaServices {
          return nodobyThere;
      }
      
+     public void setAmountOccupied2zero(CinemaAuditorium aCinemaRoom){
+         aCinemaRoom.setAmountOccupiedSeats(0);
+     }
      
+    
+     
+      
+     
+     // Here my only concern is placing a persona which already has a ticket. 
+     // If he/she has a ticket I don't need to check if there's still place available
+     // That issue should be dealt somewhere else
+     public CinemaAuditorium placeOneSpectatorRandomSeatHomoSapiensMethod(CinemaAuditorium allSeatsbefore, Spectator spectatorWithTicket){
+         CinemaAuditorium roomAfterPlacement = allSeatsbefore;
+         
+         int randomSeatIndex = returnRandomIndexMax47();
+         String spectName = spectatorWithTicket.getSpectatorFullName();
+         CinemaSeat chosenSeat = allSeatsbefore.getSeatsInCinema().get(randomSeatIndex);
+         String chosenSeatCode = chosenSeat.getSeatCode2();
+         System.out.println("Let's check if " + chosenSeatCode + " is available");
+         boolean iCanKeepGoing = checkIfSeatIsEmpty(chosenSeat);
+         if(iCanKeepGoing){
+             System.out.println("Dear " + spectName + "your seat is " + chosenSeatCode + " \n Enjoy the movie!");
+         } else System.out.println("We're sorry, the randomly selected seat is occupied. Let's try again.  ");
+         
+        
+         return roomAfterPlacement;
+     }
+     
+
+     
+     // WARNING : SOME PROBLEM HERE SINCE AF
+     public CinemaAuditorium placeOneSpectatorRandomlyTry3times(CinemaAuditorium allSeatsbefore, Spectator spectatorWithTicket){
+         // I start with 48 seats, some of them are empty, some are occupied
+        CinemaAuditorium roomAfterPlacement = allSeatsbefore;   // This will be the return statement. 
+         // Now I should try to find an empty seat, but only 3 times. 
+        int counter = 1;
+        boolean keepGoing = true;                           // Keep looking for an empty seat  
+        boolean iDidntFoundAnEmptySeat = true;              // If I couldn't find, I keep going (the idea es to have allways true)
+        CinemaSeat seat2replace = new CinemaSeat();         // If I don't instantiate the thing I can't keep going
+        do {
+            System.out.print("Test time #" + counter + "/3. ");
+            CinemaSeat seat2test = findRandomSeat(allSeatsbefore);
+            System.out.println("We test seat " + seat2test.getSeatCode2() + " to check if it is empty");
+            boolean seatIsEmpty = checkIfSeatIsEmpty(seat2test);
+            System.out.println("It is " + seatIsEmpty + " that I found an empty seat RANDOMLY");
+            System.out.println("");
+         
+             // If I found an empty seat, I have to place the Spectator there (and that I should code separately)    
+                        
+            if (seatIsEmpty){
+                /* Remember:
+                    placeSpectatorInSeat(CinemaSeat emptySeat, Spectator spectatorWithTicket){}
+                    returns the seat now occupied by this spectator
+                */
+                seat2replace = placeSpectatorInSeat(seat2test, spectatorWithTicket);
+                int indexSeat2replace = seat2replace.getSeatIndexInArray();
+                roomAfterPlacement.getSeatsInCinema().set(indexSeat2replace, seat2test);
+                keepGoing = false;
+            } else {
+                if (counter >= 3){
+                    keepGoing = false;
+                    System.out.println("We tried 3 times to find a seat Randomly, so now we find a seat Manually");
+                    //displayNextEmptySeat(allSeatsbefore);
+                    CinemaSeat emptySeatChosenManually = findAnEmptySeat(allSeatsbefore);
+                    System.out.println("We found that seat " + emptySeatChosenManually.getSeatCode2() + " is empty.");
+                
+                    seat2replace = placeSpectatorInSeat(emptySeatChosenManually, spectatorWithTicket);
+                    // seat2replce is the OCCUPIED SEAT WITH THE CUSTOMER INFO
+                    int indexSeat2replace = seat2replace.getSeatIndexInArray();
+                    roomAfterPlacement.getSeatsInCinema().set(indexSeat2replace, seat2replace);
+                    
+                } 
+                counter++;
+            }
+            
+            
+        } while (keepGoing);
+        
+        
+        return roomAfterPlacement;
+     }
+     
+     public CinemaAuditorium place4SpectatorsInListCavemanMethod(CinemaAuditorium roomB4, CinemaCustomers listSpectators2place){
+         /*
+         the method I already have needs    a) the collection of seats
+                                            b) a spectator
+         */
+         
+        // PLACEMENT OF SPECTATOR #01 
+        // I get 1st spectator
+        Spectator spectator01 = listSpectators2place.getListOfSpectators().get(0);
+        // the room before i have it in the parameter
+        CinemaAuditorium roomB4spectator01 = roomB4;
+        
+        CinemaAuditorium roomAfterSpectator01 = placeOneSpectatorRandomlyTry3times(roomB4, spectator01);
+        
+        // PLACEMENT OF SPECTATOR #02 
+        // I get 2nd spectator
+        Spectator spectator02 = listSpectators2place.getListOfSpectators().get(1);
+        // the room before i have it in the parameter
+        CinemaAuditorium roomB4spectator02 = roomAfterSpectator01;
+        
+        CinemaAuditorium roomAfterSpectator02 = placeOneSpectatorRandomlyTry3times(roomB4spectator02, spectator02);
+        
+        // PLACEMENT OF SPECTATOR #03 
+        // I get 3rd spectator
+        Spectator spectator03 = listSpectators2place.getListOfSpectators().get(2);
+        // the room before i have it in the parameter
+        CinemaAuditorium roomB4spectator03 = roomAfterSpectator02;
+        
+        CinemaAuditorium roomAfterSpectator03 = placeOneSpectatorRandomlyTry3times(roomB4spectator03, spectator03);
+        
+        // PLACEMENT OF SPECTATOR #04
+        // I get 4th spectator, (the one with index 3)
+        Spectator spectator04 = listSpectators2place.getListOfSpectators().get(3);
+        // the room before i have it in the parameter
+        CinemaAuditorium roomB4spectator04 = roomAfterSpectator03;
+        
+        CinemaAuditorium roomAfterSpectator04 = placeOneSpectatorRandomlyTry3times(roomB4spectator04, spectator04);
+        
+        /*
+        ....
+        */
+       
+        return roomAfterSpectator04;
+     }
+     
+//     public CinemaAuditorium placeOneSpectatorInNextEmptySeat(CinemaAuditorium allSeatsbefore, Spectator spectatorWithTicket){
+//         CinemaAuditorium roomAfterPlacement = allSeatsbefore;
+//         CinemaSeat firstSeatThatIsEmpty = findAnEmptySeat(roomB4);
+//         return roomAfterPlacement;
+//     }
+                
+    public void displayNextEmptySeat(CinemaAuditorium roomB4){
+        CinemaSeat seat2display = findAnEmptySeat(roomB4);
+        System.out.println("I found that seat " + seat2display.getSeatCode2() + " is empty");
+    }
+     
+    public CinemaSeat findAnEmptySeat(CinemaAuditorium roomB4){
+        CinemaSeat seat2return = new CinemaSeat();
+        int indexOfSeat2return = 0;
+        boolean iFoundEmptySeat = false;
+        int counter = 0;
+        do {
+            // analize seat corresponding to counter
+            CinemaSeat seat2analize = roomB4.getSeatsInCinema().get(counter);
+            iFoundEmptySeat = checkIfSeatIsEmpty(seat2analize);
+            counter++;
+            if(iFoundEmptySeat){
+                seat2return = seat2analize;
+            }
+        } while (!iFoundEmptySeat || (counter > roomB4.getSeatsInCinema().size()));
+        
+        return seat2return;
+    }            
+                
+     public CinemaAuditorium returnRoomB4_n_Spectator(CinemaAuditorium cinemaRoom, int indexOfspectator){
+         CinemaAuditorium returnThisCinemaRoom = cinemaRoom;
+         if (indexOfspectator==0){
+             returnThisCinemaRoom = cinemaRoom;
+         }
+         
+         return returnThisCinemaRoom;
+     }
+     
+
+     
+     public CinemaSeat placeSpectatorInSeat(CinemaSeat emptySeat, Spectator spectatorWithCorrectMoneyAge){
+         // Using empty seat and Spectator as parameter, it returns the occupied seat with attached info
+         // It would be better to validate (seat is really empty)
+         /*     ORIGINAL SEAT > > > > > > > > > > > > > > > > > > > WE RETURN THIS SEAT 
+            int seatIndexInArray;     yes                           int seatIndexInArray;       the same
+            boolean seatWithSomeone;  false (at instantiation)      boolean seatWithSomeone;    TRUE
+            String seatSpectatorName; null                          String seatSpectatorName;   Name from Spectator parameter
+            String seatCode2;         yes                           String seatCode2;           the same
+            
+         */  
+         CinemaSeat seatWithSomeone = emptySeat;
+         seatWithSomeone.setSeatWithSomeone(true);
+         String spectName = spectatorWithCorrectMoneyAge.getSpectatorFullName();
+         seatWithSomeone.setSeatSpectatorName(spectName);
+         displaySeatInfo(seatWithSomeone); // Can't we put this somewheare else??? :/
+         return seatWithSomeone;
+     }
+     
+     public void displaySeatInfo(CinemaSeat seat){
+         //System.out.println("");
+         System.out.print("Seat #" + seat.getSeatCode2());
+         System.out.println(" Only valid for " + seat.getSeatSpectatorName());
+         System.out.println("");
+     }
+     
+     public CinemaSeat findRandomSeat(CinemaAuditorium theFullRoom){
+         int randomIndexSeat = returnRandomIndexMax47();
+         CinemaSeat chosenSeat = theFullRoom.getSeatsInCinema().get(randomIndexSeat);
+         return chosenSeat;
+     }
      
      
      // We assign one customer to one seat RANDOMLY
      // WARNING: this method might consume an EXCESS OF MEMORY
-     public CinemaAuditorium randomOneSpectatorPlacementCavemanMethod(CinemaAuditorium allSeatsbefore){
+     public CinemaAuditorium randomOneSpectatorPlacementCavemanMethod(CinemaAuditorium allSeatsbefore, Spectator spect){
         CinemaAuditorium allseatsafter = allSeatsbefore;
-        // first i look for an empty RANDOM seat 
-        // I do NOT want to seat everybody TOGETHER
-        int randomSeatIndex = returnRandomIndexMax47();
+         
+        int occupiedSeats = allSeatsbefore.getAmountOccupiedSeats();
+        int totalAmountSeats = allSeatsbefore.getSeatsInCinema().size();
+        String spectName = spect.getSpectatorFullName();
+        
+        if (totalAmountSeats > occupiedSeats){
+            // 1) look for an empty RANDOM seat since I do NOT want to seat everybody TOGETHER
+                // 1.1a) I choose a random index between 0 and 47
+                int randomSeatIndex = returnRandomIndexMax47();
+                CinemaSeat chosenSeat = allSeatsbefore.getSeatsInCinema().get(randomSeatIndex);
+                String chosenSeatCode = chosenSeat.getSeatCode2();
+                // 1.1b) Explain that you will check if the randomly selected seat is available
+                System.out.println("Let's check if " + chosenSeatCode + " is available");
+                
+                // 1.2) I check if that seat is empty/not empty, so I need CinemaSeat with corresponding index
+                
+                
+                boolean iCanKeepGoing = checkIfSeatIsEmpty(chosenSeat);
+                
+                if(iCanKeepGoing){  
+                    System.out.println("Nice  " + spectName + ", you've got an empty seat, and IT IS FOR YOU!!!");
+                    String seatCode = chosenSeat.getSeatCode2();
+                    // I change the seat boolean to occupied
+                    chosenSeat.setSeatWithSomeone(true);
+                    chosenSeat.setSeatSpectatorName(spectName);
+                    // now I need to change the disposition of the seats,
+                    allseatsafter.getSeatsInCinema().set(randomSeatIndex, chosenSeat);
+                    
+                    System.out.println("Please accomodate your buttocks over seat " + seatCode);
+                } else
+                    System.out.println("Sorry, seat "  + chosenSeatCode + " is not empty, \n let's check for another seat ");
         
         
+        } else System.out.println("We cannot place another person, since the room is full");
         
-        
+       
+         System.out.println("");
         return allseatsafter;
      }
      
@@ -369,11 +676,19 @@ public class CinemaServices {
      
      public Film hardcodeOneFilm(){
          // 1h52m = 60 + 52 = 112
-         Film movie = new Film("Tacones Lejanos", "Pedro Almodovar",112, (int) CinemaPrices.getPr01());
+         Film movie = new Film("Tacones Lejanos", "Pedro Almodovar", 112, 18);
          
          return movie;
      }
     
+     
+     // PART 5: CINEMA MANAGEMENT
+     
+     public CinemaManager generateSpecificCinemaEventExemple(CinemaAuditorium availableCinemaRoom){
+         
+         
+         return new CinemaManager(hardcodeOneFilm(), availableCinemaRoom, CinemaTicketPriceEnum.WEEKEND_DISCOUNT.getTicketPriceUSD());
+     }
     
 }
 

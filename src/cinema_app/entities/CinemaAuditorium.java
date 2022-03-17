@@ -12,7 +12,11 @@ import java.util.ArrayList;
  * @author Ivan
  */
 public class CinemaAuditorium {
+    
+    private String theaterRoomName;
     private ArrayList<CinemaSeat> seatsInCinema;
+    private Integer amountOccupiedSeats;
+    
 
     // ATTENTION: This has been modified in order to initialize the ArrayList when calling empty constructor
     public CinemaAuditorium() {
@@ -31,6 +35,25 @@ public class CinemaAuditorium {
         this.seatsInCinema = seatsInCinema;
     }
 
+    public String getTheaterRoomName() {
+        return theaterRoomName;
+    }
+
+    public void setTheaterRoomName(String theaterRoomName) {
+        this.theaterRoomName = theaterRoomName;
+    }
+
+    public Integer getAmountOccupiedSeats() {
+        return amountOccupiedSeats;
+    }
+
+    public void setAmountOccupiedSeats(Integer amountOccupiedSeats) {
+        this.amountOccupiedSeats = amountOccupiedSeats;
+    }
+
+    
+    
+    
     @Override
     public String toString() {
         return "CinemaAuditorium{" + "seatsInCinema=" + seatsInCinema + '}';
