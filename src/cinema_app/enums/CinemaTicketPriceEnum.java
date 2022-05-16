@@ -1,14 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package cinema_app.enums;
 
-/**
- *
- * @author Ivan
- */
 public enum CinemaTicketPriceEnum {
     FREE_TICKET("Free Ticket",0), 
     TUESDAY_SUPER_DISCOUNT("Best Deal Super Discount",2), 
@@ -32,10 +24,10 @@ public enum CinemaTicketPriceEnum {
     public double getTicketPriceUSD() {
         return ticketPriceUSD;
     }
-    
-    
-    
+   
 }
+
+
 
 /*
 From less to most expensive

@@ -241,4 +241,10 @@ que el asiento este ocupado se le debe buscar uno libre.
 
 Al final del programa deberemos mostrar la tabla, podemos mostrarla con la letra y
 numero de cada asiento o solo las X y espacios vacíos.
+
+
++-------------------------+
+|  new git branch         |
+|  cinema_app_using_JPA   |
++-------------------------+
 */
